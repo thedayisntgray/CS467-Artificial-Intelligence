@@ -58,41 +58,55 @@ class BinarySearchTree
 	end
 
 	def depth_first(max_cost,node,arr,generate_solution, best_solution, depth)
-	p "depth  #{depth}"
-		#go left
+
+		left_path = go_left(max_cost,node,arr,generate_solution, best_solution, depth)
+		right_path = go_right(max_cost,node,arr,generate_solution, best_solution, depth)
+
+		if sum_val(left_path) > sum_val(right_path)
+			puts "LEFT: #{left_path} \n RIGHT: #{right_path} \n Left PATH IS GREATER AND RETURNED\n"
+			return left_path
+		else
+			puts "LEFT: #{left_path} \n RIGHT: #{right_path} \n Right PATH IS GREATER AND RETURNED\n"
+			return right_path
+		end
+
+	end
+
+	def go_left(max_cost,node,arr,generate_solution, best_solution, depth)
 		if depth < arr.length
-			p "Item added to tree = #{arr[depth]}"
+			#p "Item added to tree = #{arr[depth]}"
 
 			node.left = Node.new(arr[depth])
-			depth_first(max_cost,node.left,arr,generate_solution,best_solution, depth + 1)
+			return depth_first(max_cost,node.left,arr,generate_solution,best_solution, depth + 1)
 		else
 			#sum up the genereate node and compare to best max, if it is greater this new generated set is the best set and has the new max as long as it is less than the cost
-			p "generate solution #{generate_solution}"
-			p "best solution:  #{best_solution}"
+			#p "generate solution #{generate_solution}"
+			#p "best solution:  #{best_solution}"
 			cost = sum_cost(generate_solution)
 			value = sum_val(generate_solution)
-			puts "Left - MAX COST #{max_cost} \nCOST: #{cost} \nVALUE: #{value} \nBEST VALUE: #{sum_val(best_solution)}"
+			#puts "Left - MAX COST #{max_cost} \nCOST: #{cost} \nVALUE: #{value} \nBEST VALUE: #{sum_val(best_solution)}"
 			if cost < max_cost  and value > sum_val(best_solution)
-				p "generate_solution.dup : #{generate_solution.dup} "
+				#p "generate_solution.dup : #{generate_solution.dup} "
 				best_solution = generate_solution.dup
-				p "best_solution : #{generate_solution.dup} "
+				#p "best_solution : #{generate_solution.dup} "
 				generate_solution = []
-				p "generate_solution = [] : #{ generate_solution} "
-				p "best_solution becomes :  #{ best_solution} "
+				#p "generate_solution = [] : #{ generate_solution} "
+				#p "best_solution becomes :  #{ best_solution} "
 				return best_solution
 			end
-			puts "\ndepth in else   #{depth}\n"
+			#puts "\ndepth in else   #{depth}\n"
 		end
-			
-		#if node is nil we are at root node
+			return []
+	end
 
-		#go right
+	def go_right(max_cost,node,arr,generate_solution, best_solution, depth)
 		if depth < arr.length
 			node.right = Node.new(arr[depth])
 			generate_solution << node.right.data
-			depth_first(max_cost,node.right,arr,generate_solution,best_solution, depth + 1)
+			best_solution = depth_first(max_cost,node.right,arr,generate_solution,best_solution, depth + 1)
 			poppy = generate_solution.pop
-			p "popped #{poppy}"
+			return best_solution
+			#p "popped #{poppy}"
 		else
 			#sum up the genereate node and compare to best max, if it is greater this new generated set is the best set and has the new max as long as it is less than the cost
 			cost = sum_cost(generate_solution)
@@ -102,8 +116,9 @@ class BinarySearchTree
 				generate_solution = []
 				return best_solution
 			end
-			puts "\ndepth in 2nd else   #{depth}\n"
+			#puts "\ndepth in 2nd else   #{depth}\n"
 		end
+			return []
 	end
 	
 	def sum_cost(arr)
@@ -118,7 +133,8 @@ class BinarySearchTree
 
 	def sum_val(arr)
 		sum = 0
-		return sum if arr.empty?
+		return sum if arr.nil? or arr.empty?
+		p "Arr is #{arr}"
 		arr.each do |item|
 			sum += 0 if item.nil?
 			sum += item[2].to_i
@@ -164,22 +180,8 @@ def main
 
 	tree = BinarySearchTree.new
 
-	p "THE BEST SOLUTION IS " +  tree.depth_first_search(input, maxWeight)
+	p "THE BEST SOLUTION IS #{tree.depth_first_search(input, maxWeight)}"
 
 end
 
 main()
-=begin
-root = Node.new(3)
-root.left = Node.new(2)
-root.right = Node.new(1)
-
-# just a few of the various operations Enumerable provides
-puts "SUM"
-puts root.inject(0) { |memo, val| memo += val.data }
-puts "MAX"
-puts root.max.data
-puts "SORT"
-puts root.sort.map(&:data)
-
-=end
